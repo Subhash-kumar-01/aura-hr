@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as UploadRouteImport } from './routes/upload'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as JobRouteImport } from './routes/job'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UploadRoute = UploadRouteImport.update({
@@ -23,6 +24,11 @@ const LoginRoute = LoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JobRoute = JobRouteImport.update({
+  id: '/job',
+  path: '/job',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/job': typeof JobRoute
   '/login': typeof LoginRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/job': typeof JobRoute
   '/login': typeof LoginRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/job': typeof JobRoute
   '/login': typeof LoginRoute
   '/upload': typeof UploadRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/upload'
+  fullPaths: '/' | '/job' | '/login' | '/upload'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/upload'
-  id: '__root__' | '/' | '/login' | '/upload'
+  to: '/' | '/job' | '/login' | '/upload'
+  id: '__root__' | '/' | '/job' | '/login' | '/upload'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  JobRoute: typeof JobRoute
   LoginRoute: typeof LoginRoute
   UploadRoute: typeof UploadRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/job': {
+      id: '/job'
+      path: '/job'
+      fullPath: '/job'
+      preLoaderRoute: typeof JobRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  JobRoute: JobRoute,
   LoginRoute: LoginRoute,
   UploadRoute: UploadRoute,
 }
