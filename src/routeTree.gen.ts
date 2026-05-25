@@ -14,6 +14,7 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as JobRouteImport } from './routes/job'
 import { Route as CandidatesRouteImport } from './routes/candidates'
+import { Route as AnalyticsRouteImport } from './routes/analytics'
 import { Route as IndexRouteImport } from './routes/index'
 
 const UploadRoute = UploadRouteImport.update({
@@ -41,6 +42,11 @@ const CandidatesRoute = CandidatesRouteImport.update({
   path: '/candidates',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AnalyticsRoute = AnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -49,6 +55,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/candidates': typeof CandidatesRoute
   '/job': typeof JobRoute
   '/login': typeof LoginRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/candidates': typeof CandidatesRoute
   '/job': typeof JobRoute
   '/login': typeof LoginRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/analytics': typeof AnalyticsRoute
   '/candidates': typeof CandidatesRoute
   '/job': typeof JobRoute
   '/login': typeof LoginRoute
@@ -74,12 +83,27 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/candidates' | '/job' | '/login' | '/report' | '/upload'
+  fullPaths:
+    | '/'
+    | '/analytics'
+    | '/candidates'
+    | '/job'
+    | '/login'
+    | '/report'
+    | '/upload'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/candidates' | '/job' | '/login' | '/report' | '/upload'
+  to:
+    | '/'
+    | '/analytics'
+    | '/candidates'
+    | '/job'
+    | '/login'
+    | '/report'
+    | '/upload'
   id:
     | '__root__'
     | '/'
+    | '/analytics'
     | '/candidates'
     | '/job'
     | '/login'
@@ -89,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AnalyticsRoute: typeof AnalyticsRoute
   CandidatesRoute: typeof CandidatesRoute
   JobRoute: typeof JobRoute
   LoginRoute: typeof LoginRoute
@@ -133,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CandidatesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/analytics': {
+      id: '/analytics'
+      path: '/analytics'
+      fullPath: '/analytics'
+      preLoaderRoute: typeof AnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -145,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AnalyticsRoute: AnalyticsRoute,
   CandidatesRoute: CandidatesRoute,
   JobRoute: JobRoute,
   LoginRoute: LoginRoute,
