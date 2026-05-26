@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { UploadCloud, FileText, CheckCircle2, X, Cloud, FolderOpen, Sparkles, Download, AlertTriangle } from "lucide-react";
+import { UploadCloud, FileText, Cloud, FolderOpen, Sparkles, Download, AlertTriangle } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
 import { processFiles, type Shortlisted } from "@/lib/resumeExtract";
 import { useJob } from "@/lib/resumeData";
