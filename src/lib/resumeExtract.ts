@@ -1,5 +1,13 @@
 import { scoreResume, type JobConfig, type Resume } from "./resumeData";
 
+declare module "pdfjs-dist/build/pdf.worker.min.mjs?url" {
+  const url: string;
+  export default url;
+}
+declare module "mammoth/mammoth.browser" {
+  export function extractRawText(input: { arrayBuffer: ArrayBuffer }): Promise<{ value: string }>;
+}
+
 // Lazy-loaded worker; pdfjs ESM build ships its own worker.
 let pdfjsP: Promise<typeof import("pdfjs-dist")> | null = null;
 async function getPdfjs() {
