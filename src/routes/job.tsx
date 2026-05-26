@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { motion } from "framer-motion";
 import { Plus, X, Briefcase, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { loadJob, saveJob } from "@/lib/resumeData";
 
 export const Route = createFileRoute("/job")({ component: JobPage });
 
@@ -41,8 +43,23 @@ function Chips({ items, setItems, placeholder }: { items: string[]; setItems: (v
 }
 
 function JobPage() {
-  const [skills, setSkills] = useState(["React", "TypeScript", "Tailwind", "Node.js"]);
-  const [tech, setTech] = useState(["Next.js", "GraphQL", "AWS"]);
+  const navigate = useNavigate();
+  const [role, setRole] = useState("Data Scientist");
+  const [minExp, setMinExp] = useState(3);
+  const [skills, setSkills] = useState<string[]>(["Python", "SQL", "Machine Learning"]);
+  const [tech, setTech] = useState<string[]>(["TensorFlow", "Pytorch"]);
+
+  useEffect(() => {
+    const j = loadJob();
+    setRole(j.role);
+    setMinExp(j.minExperience);
+    setSkills(j.requiredSkills);
+  }, []);
+
+  const runMatch = () => {
+    saveJob({ role, minExperience: minExp, requiredSkills: [...skills, ...tech] });
+    navigate({ to: "/candidates" });
+  };
 
   return (
     <AppLayout>
@@ -55,21 +72,35 @@ function JobPage() {
             <label className="text-xs text-muted-foreground">Job role / title</label>
             <div className="mt-1 flex items-center gap-2 glass rounded-lg px-3 py-2.5">
               <Briefcase className="w-4 h-4 text-muted-foreground" />
-              <input defaultValue="Senior Frontend Engineer" className="bg-transparent outline-none text-sm flex-1" />
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="bg-transparent outline-none text-sm flex-1"
+              >
+                {["Data Scientist","AI Researcher","Software Engineer","Cybersecurity Analyst"].map((r) => (
+                  <option key={r} className="bg-background">{r}</option>
+                ))}
+              </select>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="text-xs text-muted-foreground">Experience (years)</label>
-              <input defaultValue="5+" className="mt-1 w-full glass rounded-lg px-3 py-2.5 text-sm outline-none" />
+              <input
+                type="number"
+                min={0}
+                value={minExp}
+                onChange={(e) => setMinExp(Number(e.target.value) || 0)}
+                className="mt-1 w-full glass rounded-lg px-3 py-2.5 text-sm outline-none"
+              />
             </div>
             <div>
               <label className="text-xs text-muted-foreground">Employment type</label>
               <select className="mt-1 w-full glass rounded-lg px-3 py-2.5 text-sm outline-none">
-                <option>Full-time</option>
-                <option>Contract</option>
-                <option>Internship</option>
+                <option className="bg-background">Full-time</option>
+                <option className="bg-background">Contract</option>
+                <option className="bg-background">Internship</option>
               </select>
             </div>
           </div>
@@ -93,21 +124,29 @@ function JobPage() {
           </div>
 
           <div className="flex gap-3">
-            <button className="rounded-lg bg-gradient-to-r from-primary to-accent text-primary-foreground font-medium px-5 py-2.5 glow flex items-center gap-2">
+            <button
+              onClick={runMatch}
+              className="rounded-lg bg-gradient-to-r from-primary to-accent text-primary-foreground font-medium px-5 py-2.5 glow flex items-center gap-2"
+            >
               <Sparkles className="w-4 h-4" /> Run AI Match
             </button>
-            <button className="rounded-lg glass px-5 py-2.5 text-sm hover:bg-white/10">Save draft</button>
+            <button
+              onClick={() => saveJob({ role, minExperience: minExp, requiredSkills: [...skills, ...tech] })}
+              className="rounded-lg glass px-5 py-2.5 text-sm hover:bg-white/10"
+            >
+              Save draft
+            </button>
           </div>
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-strong rounded-2xl p-6">
           <h3 className="font-medium flex items-center gap-2"><Sparkles className="w-4 h-4 text-primary" /> AI Suggestions</h3>
-          <p className="text-xs text-muted-foreground mt-1 mb-4">Based on similar roles in your industry.</p>
+          <p className="text-xs text-muted-foreground mt-1 mb-4">Common skills from the Kaggle resume dataset.</p>
           <div className="space-y-2">
-            {["GraphQL", "Vite", "Storybook", "Playwright", "Figma", "Webpack"].map((s) => (
+            {["Python","SQL","TensorFlow","Pytorch","NLP","Deep Learning","Machine Learning","React","Java","C++","Linux","Cybersecurity","Networking","Ethical Hacking"].map((s) => (
               <button
                 key={s}
-                onClick={() => !tech.includes(s) && setTech([...tech, s])}
+                onClick={() => !skills.includes(s) && setSkills([...skills, s])}
                 className="w-full text-left text-sm glass rounded-lg px-3 py-2 hover:bg-white/10 flex items-center justify-between"
               >
                 {s}
