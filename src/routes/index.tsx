@@ -21,15 +21,10 @@ import {
   PolarAngleAxis,
 } from "recharts";
 import { AppLayout } from "@/components/AppLayout";
+import { useMemo } from "react";
+import { useResumes, useJob, rankResumes } from "@/lib/resumeData";
 
 export const Route = createFileRoute("/")({ component: Dashboard });
-
-const stats = [
-  { label: "Total Resumes", value: "2,847", change: "+12.4%", icon: FileText, color: "from-primary to-accent" },
-  { label: "Top Candidates", value: "184", change: "+8.2%", icon: Users, color: "from-emerald-400 to-cyan-400" },
-  { label: "Avg ATS Score", value: "78.6", change: "+3.1%", icon: Target, color: "from-amber-400 to-pink-400" },
-  { label: "Match Rate", value: "64%", change: "+5.7%", icon: TrendingUp, color: "from-fuchsia-400 to-violet-500" },
-];
 
 const trendData = Array.from({ length: 14 }, (_, i) => ({
   day: `D${i + 1}`,
@@ -37,14 +32,31 @@ const trendData = Array.from({ length: 14 }, (_, i) => ({
   matches: 30 + Math.round(Math.cos(i / 2) * 20 + Math.random() * 30),
 }));
 
-const topCandidates = [
-  { name: "Aarav Mehta", role: "Senior Frontend Engineer", score: 96, skills: 92 },
-  { name: "Sara Chen", role: "ML Engineer", score: 93, skills: 89 },
-  { name: "Diego Romero", role: "Full Stack Developer", score: 91, skills: 88 },
-  { name: "Priya Sharma", role: "Data Scientist", score: 89, skills: 85 },
-];
-
 function Dashboard() {
+  const { data } = useResumes();
+  const [job] = useJob();
+
+  const { stats, topCandidates, avgAts } = useMemo(() => {
+    const total = data.length;
+    const ranked = rankResumes(data, job);
+    const top = ranked.slice(0, 4).map((r) => ({
+      name: r.name, role: r.role, score: r.matchScore, skills: r.skillMatch,
+    }));
+    const matched = ranked.filter((r) => r.matchScore >= 70).length;
+    const ats = total ? Math.round((data.reduce((s, r) => s + r.aiScore, 0) / total) * 10) / 10 : 0;
+    const matchRate = total ? Math.round((matched / total) * 100) : 0;
+    return {
+      avgAts: ats,
+      topCandidates: top,
+      stats: [
+        { label: "Total Resumes", value: total.toLocaleString(), change: "Kaggle dataset", icon: FileText, color: "from-primary to-accent" },
+        { label: `Top Matches for ${job.role}`, value: matched.toLocaleString(), change: `${matchRate}% pool`, icon: Users, color: "from-emerald-400 to-cyan-400" },
+        { label: "Avg ATS Score", value: ats.toString(), change: "out of 100", icon: Target, color: "from-amber-400 to-pink-400" },
+        { label: "Match Rate", value: `${matchRate}%`, change: "≥70 score", icon: TrendingUp, color: "from-fuchsia-400 to-violet-500" },
+      ],
+    };
+  }, [data, job]);
+
   return (
     <AppLayout>
       <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
@@ -52,7 +64,7 @@ function Dashboard() {
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">Dashboard</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Live overview of your AI screening pipeline.
+              Live overview · {data.length.toLocaleString()} resumes loaded from Kaggle dataset.
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 glass rounded-lg px-3 py-2 text-sm">
@@ -118,7 +130,7 @@ function Dashboard() {
             <h3 className="font-medium mb-1">ATS Score</h3>
             <p className="text-xs text-muted-foreground mb-4">Average across all resumes</p>
             <ResponsiveContainer width="100%" height={200}>
-              <RadialBarChart innerRadius="70%" outerRadius="100%" data={[{ value: 78 }]} startAngle={90} endAngle={-270}>
+              <RadialBarChart innerRadius="70%" outerRadius="100%" data={[{ value: avgAts }]} startAngle={90} endAngle={-270}>
                 <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
                 <RadialBar dataKey="value" cornerRadius={20} fill="url(#radg)" background={{ fill: "#ffffff10" }} />
                 <defs>
@@ -130,11 +142,11 @@ function Dashboard() {
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="-mt-32 text-center pointer-events-none">
-              <div className="text-4xl font-semibold text-gradient">78.6</div>
+              <div className="text-4xl font-semibold text-gradient">{avgAts || "—"}</div>
               <div className="text-xs text-muted-foreground mt-1">Out of 100</div>
             </div>
             <div className="mt-24 text-xs text-muted-foreground text-center">
-              +3.1% from last week
+              Avg across {data.length.toLocaleString()} resumes
             </div>
           </div>
         </div>
