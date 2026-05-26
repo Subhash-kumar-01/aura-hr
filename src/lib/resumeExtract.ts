@@ -6,8 +6,7 @@ async function getPdfjs() {
   if (!pdfjsP) {
     pdfjsP = (async () => {
       const pdfjs = await import("pdfjs-dist");
-      // @ts-expect-error - vite worker import
-      const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default;
+      const workerUrl = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url" as string)).default;
       pdfjs.GlobalWorkerOptions.workerSrc = workerUrl;
       return pdfjs;
     })();
@@ -30,8 +29,8 @@ export async function extractText(file: File): Promise<string> {
     return out;
   }
   if (name.endsWith(".docx")) {
-    const mammoth = await import("mammoth/mammoth.browser");
-    const res = await (mammoth as any).extractRawText({ arrayBuffer: buf });
+    const mammoth: any = await import("mammoth/mammoth.browser" as string);
+    const res = await mammoth.extractRawText({ arrayBuffer: buf });
     return res.value as string;
   }
   // txt / md / fallback
