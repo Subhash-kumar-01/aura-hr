@@ -75,11 +75,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "HireSense — AI Resume Screening & ATS Analyzer" },
       { name: "description", content: "Modern AI-powered HR platform for resume screening, candidate ranking, and ATS analytics." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "HireSense — AI Resume Screening & ATS Analyzer" },
+      { property: "og:description", content: "Modern AI-powered HR platform for resume screening, candidate ranking, and ATS analytics." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "HireSense — AI Resume Screening & ATS Analyzer" },
+      { name: "twitter:description", content: "Modern AI-powered HR platform for resume screening, candidate ranking, and ATS analytics." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9a3c99c5-c075-41a7-9090-fc43a488f83b/id-preview-7268e7e4--d238f1f9-0944-4d19-8088-abc2bee133db.lovable.app-1779775110994.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/9a3c99c5-c075-41a7-9090-fc43a488f83b/id-preview-7268e7e4--d238f1f9-0944-4d19-8088-abc2bee133db.lovable.app-1779775110994.png" },
     ],
     links: [
       {
